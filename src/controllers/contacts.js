@@ -1,0 +1,25 @@
+import createHttpError from 'http-errors';
+import { getAllContacts, getContactById } from '../services/contacts.js';
+import { ctrlWrapper } from '../utils/ctrlWrapper.js';
+
+export const getContactsController = ctrlWrapper(async (req, res) => {
+  const contacts = await getAllContacts();
+  res.status(200).json({
+    status: 200,
+    message: 'Successfully found contacts!',
+    data: contacts,
+  });
+});
+
+export const getContactController = ctrlWrapper(async (req, res) => {
+  const contact = await getContactById(req.params.contactId);
+
+  if (!contact) {
+    throw createHttpError(404, 'Contact not found');
+  }
+  res.status(200).json({
+    status: 200,
+    message: `Successfully found contact with id ${req.params.contactId}!`,
+    data: contact,
+  });
+});
