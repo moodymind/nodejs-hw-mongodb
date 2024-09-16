@@ -1,5 +1,9 @@
 import createHttpError from 'http-errors';
-import { getAllContacts, getContactById } from '../services/contacts.js';
+import {
+  createContact,
+  getAllContacts,
+  getContactById,
+} from '../services/contacts.js';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 
 export const getContactsController = ctrlWrapper(async (req, res) => {
@@ -23,3 +27,13 @@ export const getContactController = ctrlWrapper(async (req, res) => {
     data: contact,
   });
 });
+
+export const createContactController = async (req, res) => {
+  const student = await createContact(req.body);
+
+  res.status(201).jsonc({
+    status: 201,
+    message: 'Successfully created a contact!',
+    data: student,
+  });
+};
