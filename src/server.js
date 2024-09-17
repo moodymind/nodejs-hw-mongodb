@@ -2,12 +2,9 @@ import express from 'express';
 import pino from 'pino-http';
 import cors from 'cors';
 import env from './utils/env.js';
-import {
-  getContactsController,
-  getContactController,
-} from './controllers/contacts.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
+import contactsRouter from './routers/contacts.js';
 
 const PORT = Number(env('PORT', '3000'));
 
@@ -25,9 +22,7 @@ export const startServer = () => {
     }),
   );
 
-  app.get('/contacts', getContactsController);
-
-  app.get('/contacts/:contactId', getContactController);
+  app.use('/contacts', contactsRouter);
 
   app.use(errorHandler);
 
