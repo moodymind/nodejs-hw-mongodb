@@ -22,8 +22,13 @@ export const patchContact = async (contactId, payload, options = {}) => {
       _id: contactId,
     },
     payload,
-    { new: true },
+    {
+      new: true,
+      includeResultMetadata: true,
+    },
   );
+
+  if (!rawResult || !rawResult.value) return null;
 
   return {
     contact: rawResult.value,
