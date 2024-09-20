@@ -2,8 +2,9 @@ import express from 'express';
 import pino from 'pino-http';
 import cors from 'cors';
 import env from './utils/env.js';
-import { getContacts } from './controllers/getAllContacts.js';
-import { getContact } from './controllers/getContactById.js';
+import { errorHandler } from './middlewares/errorHandler.js';
+import { notFoundHandler } from './middlewares/notFoundHandler.js';
+import contactsRouter from './routers/contacts.js';
 
 const PORT = Number(env('PORT', '3000'));
 
@@ -21,15 +22,11 @@ export const startServer = () => {
     }),
   );
 
-  app.get('/contacts', getContacts);
+  app.use('/contacts', contactsRouter);
 
-  app.get('/contacts/:contactId', getContact);
+  app.use(errorHandler);
 
-  app.use('*', (req, res, next) => {
-    res.status(404).json({
-      message: 'Not found',
-    });
-  });
+  app.use('*', notFoundHandler);
 
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
