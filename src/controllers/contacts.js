@@ -8,13 +8,20 @@ import {
 } from '../services/contacts.js';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
+import { parseSortParams } from '../utils/parseSortParams.js';
+// import { parseFilterParams } from '../utils/parseFilterParams.js';
 
 export const getContactsController = ctrlWrapper(async (req, res) => {
   const { page, perPage } = parsePaginationParams(req.query);
+  const { sortOrder, sortBy } = parseSortParams(req.query);
+  // const { isFavourite } = parseFilterParams(req.query);
 
   const contacts = await getAllContacts({
     page,
     perPage,
+    sortOrder,
+    sortBy,
+    // isFavourite,
   });
 
   res.status(200).json({
