@@ -33,7 +33,10 @@ export const loginUser = async (loginData) => {
     throw createHttpError(401, 'Not authorized');
   }
 
-  const { accessToken, refreshToken } = createSession();
+  await SessionCollection.deleteOne({ userId: user._id });
+
+  const accessToken = randomBytes(30).toString('base64');
+  const refreshToken = randomBytes(30).toString('base64');
 
   const session = await SessionCollection.create({
     userId: user._id,
@@ -63,9 +66,6 @@ const createSession = () => {
 };
 
 export const refreshUserSession = async ({ sessionId, refreshToken }) => {
-  // console.log('Session ID in refreshUserSession:', sessionId);
-  // console.log('Refresh Token in refreshUserSession:', refreshToken);
-
   const session = await SessionCollection.findOne({
     _id: sessionId,
     refreshToken,
