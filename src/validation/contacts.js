@@ -31,6 +31,7 @@ export const createContactSchema = Joi.object({
       'string.max': 'Contact type should have no more than {#limit} symbols',
       'any.required': 'Contact type number is required!',
     }),
+  userId: Joi.string().required(),
 });
 
 export const updateContactSchema = Joi.object({
