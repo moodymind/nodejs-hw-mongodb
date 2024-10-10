@@ -14,7 +14,6 @@ import {
   updateContactSchema,
 } from '../validation/contacts.js';
 import { authenticate } from '../middlewares/authenticate.js';
-import { checkUserContacts } from '../middlewares/checkUserContacts.js';
 
 const contactsRouter = Router();
 
@@ -33,7 +32,6 @@ contactsRouter.post(
 contactsRouter.patch(
   '/:contactId',
   isValidId,
-  checkUserContacts,
   validateBody(updateContactSchema),
   ctrlWrapper(patchContactController),
 );
@@ -41,7 +39,6 @@ contactsRouter.patch(
 contactsRouter.delete(
   '/:contactId',
   isValidId,
-  checkUserContacts,
   ctrlWrapper(deleteContactController),
 );
 
