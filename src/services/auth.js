@@ -139,12 +139,19 @@ export const requestResetToken = async (email) => {
     link: `${env('APP_DOMAIN')}/reset-password?token=${resetToken}`,
   });
 
-  await sendEmail({
-    from: env(SMTP.SMTP_FROM),
-    to: email,
-    subject: 'Reset your password',
-    html,
-  });
+  try {
+    await sendEmail({
+      from: env(SMTP.SMTP_FROM),
+      to: email,
+      subject: 'Reset your password',
+      html,
+    });
+  } catch {
+    throw createHttpError(
+      500,
+      'Failed to send the email, please try again later.',
+    );
+  }
 };
 
 export const resetPassword = async (resetPasswordData) => {
@@ -153,7 +160,8 @@ export const resetPassword = async (resetPasswordData) => {
   try {
     entries = jwt.verify(resetPasswordData.token, env('JWT_SECRET'));
   } catch (error) {
-    if (error instanceof Error) throw createHttpError(401, error.message);
+    if (error instanceof Error)
+      throw createHttpError(401, 'Token is expired or invalid.');
     throw error;
   }
 
