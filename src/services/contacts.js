@@ -48,6 +48,7 @@ export const patchContact = async (
   payload,
   options = {},
   userId,
+  photo,
 ) => {
   const rawResult = await ContactsCollection.findOneAndUpdate(
     {

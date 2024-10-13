@@ -9,6 +9,9 @@ import {
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
+import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
+import env from '../utils/env.js';
+import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 // import { parseFilterParams } from '../utils/parseFilterParams.js';
 
 export const getContactsController = ctrlWrapper(async (req, res) => {
@@ -49,7 +52,19 @@ export const getContactController = ctrlWrapper(async (req, res) => {
 
 export const createContactController = async (req, res) => {
   const userId = req.user._id;
-  const contactData = { ...req.body, userId };
+  const photo = req.file;
+
+  let photoUrl;
+
+  if (photo) {
+    if (env('ENABLE_CLOUDINARY') === true) {
+      photoUrl = await saveFileToCloudinary(photo);
+    } else {
+      photoUrl = await saveFileToUploadDir(photo);
+    }
+  }
+
+  const contactData = { ...req.body, userId, photo: photoUrl };
 
   const contact = await createContact(contactData);
 
@@ -63,10 +78,23 @@ export const createContactController = async (req, res) => {
 export const patchContactController = async (req, res, next) => {
   const { contactId } = req.params;
   const userId = req.user._id;
+  const photo = req.file;
 
-  const result = await patchContact(contactId, req.body, userId);
+  let photoUrl;
 
-  if (!result.contact) {
+  if (photo) {
+    if (env('ENABLE_CLOUDINARY') === true) {
+      photoUrl = await saveFileToCloudinary(photo);
+    } else {
+      photoUrl = await saveFileToUploadDir(photo);
+    }
+  }
+
+  const updatedData = { ...req.body, userId, photo: photoUrl };
+
+  const patchedContact = await patchContact(contactId, updatedData);
+
+  if (!patchedContact.contact) {
     next(createHttpError(404, 'Contact not found'));
     return;
   }
@@ -74,7 +102,7 @@ export const patchContactController = async (req, res, next) => {
   res.json({
     status: 200,
     message: `Successfully patched a contact!`,
-    data: result.contact,
+    data: patchedContact.contact,
   });
 };
 
