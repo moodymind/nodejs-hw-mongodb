@@ -51,6 +51,7 @@ export const getContactController = ctrlWrapper(async (req, res) => {
 });
 
 export const createContactController = async (req, res) => {
+  console.log('Request body:', req.body);
   const userId = req.user._id;
   const photo = req.file;
 
