@@ -132,8 +132,6 @@ export const requestResetToken = async (email) => {
 
   const template = handlebars.compile(templateSource);
 
-  console.log('User name: ', user.name);
-
   const html = template({
     name: user.name,
     link: `${env('APP_DOMAIN')}/reset-password?token=${resetToken}`,
@@ -160,8 +158,12 @@ export const resetPassword = async (resetPasswordData) => {
   try {
     entries = jwt.verify(resetPasswordData.token, env('JWT_SECRET'));
   } catch (error) {
-    if (error instanceof Error)
-      throw createHttpError(401, 'Token is expired or invalid.');
+    if (error instanceof jwt.TokenExpiredError) {
+      throw createHttpError(401, 'Token is expired.');
+    }
+    if (error instanceof jwt.JsonWebTokenError) {
+      throw createHttpError(401, 'Invalid token.');
+    }
     throw error;
   }
 
@@ -174,10 +176,10 @@ export const resetPassword = async (resetPasswordData) => {
     throw createHttpError(404, 'User not found');
   }
 
-  const encryptedPassword = bcrypt.hash(resetPasswordData.password, 10);
+  const encryptedPassword = await bcrypt.hash(resetPasswordData.password, 10);
 
   await UsersCollection.updateOne(
-    { id: user._id },
+    { _id: user._id },
     { password: encryptedPassword },
   );
 };
