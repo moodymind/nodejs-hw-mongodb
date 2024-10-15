@@ -61,11 +61,14 @@ export const patchContact = async (
       includeResultMetadata: true,
     },
   );
+  console.log('rawResult:', rawResult);
 
-  if (!rawResult || !rawResult.value) return null;
+  if (!rawResult) {
+    return null;
+  }
 
   return {
-    contact: rawResult.value,
+    contact: rawResult,
   };
 };
 
