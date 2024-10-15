@@ -57,23 +57,32 @@ export const createContactController = async (req, res) => {
 
   let photoUrl;
 
-  if (photo) {
-    if (env('ENABLE_CLOUDINARY') === true) {
-      photoUrl = await saveFileToCloudinary(photo);
-    } else {
-      photoUrl = await saveFileToUploadDir(photo);
+  try {
+    if (photo) {
+      if (process.env.ENABLE_CLOUDINARY === true) {
+        photoUrl = await saveFileToCloudinary(photo);
+      } else {
+        photoUrl = await saveFileToUploadDir(photo);
+      }
     }
+
+    const contactData = { ...req.body, userId, photo: photoUrl };
+
+    const contact = await createContact(contactData);
+
+    res.status(201).json({
+      status: 201,
+      message: 'Successfully created a contact!',
+      data: contact,
+    });
+  } catch (error) {
+    console.error('Error creating contact:', error);
+    res.status(500).json({
+      status: 500,
+      message: 'Internal server error',
+      data: error.message,
+    });
   }
-
-  const contactData = { ...req.body, userId, photo: photoUrl };
-
-  const contact = await createContact(contactData);
-
-  res.status(201).json({
-    status: 201,
-    message: 'Successfully created a contact!',
-    data: contact,
-  });
 };
 
 export const patchContactController = async (req, res, next) => {
