@@ -1,0 +1,23 @@
+type: object
+required:
+  - userId
+  - name
+  - phoneNumber
+  - contactType
+properties:
+  userId:
+    description: "Contact's id"
+    type: string
+    example: 65e4decdd286b30065d54af9
+  name:
+    description: "Contact's name"
+    type: string
+    example: 'John Doe'
+  phoneNumber:
+    description: "Contact's phone number"
+    type: string
+    example: '+1234567890'
+  contactType:
+    description: "Contact's type. Should be either work, home or personal"
+    type: boolean
+    example: 'work'
