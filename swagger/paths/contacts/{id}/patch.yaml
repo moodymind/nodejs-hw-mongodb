@@ -1,0 +1,74 @@
+tags:
+  - Contacts
+summary: Update contact
+operationId: updateContact
+description: 'Update contact by id'
+security:
+  - bearerAuth: []
+parameters:
+  - in: path
+    name: contactId
+    required: true
+    schema:
+      type: string
+      example: '65ca67e7ae7f10c88b598384'
+    description: "Contact's id"
+requestBody:
+  description: "Contact's update data"
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          name:
+            type: string
+            example: 'John Doe'
+          email:
+            type: string
+            example: 'john.doe@example.com'
+          phone:
+            type: string
+            example: '+1234567890'
+          photo:
+            type: string
+            example: 'https://res.cloudinary.com/example/photo.jpg'
+responses:
+  '200':
+    description: 'Successfully updated contact by ID'
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Successfully updated contact with id 65ca67e7ae7f10c88b598384!
+            data:
+              type: object
+              $ref: '../../../components/schemas/contact.yaml'
+  '404':
+    description: 'Contact not found'
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+          properties:
+            status:
+              type: integer
+              example: 404
+            message:
+              type: string
+              example: Contact with ID 65ca67e7ae7f10c88b598384 not found!
+  '401':
+    $ref: '../../../components/responses/401.yaml'
